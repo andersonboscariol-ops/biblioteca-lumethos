@@ -39,6 +39,16 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Forçar sem cache pra HTML (antes do express.static)
+app.use(function(req, res, next) {
+  if (req.path.endsWith('.html') || req.path === '/') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
 // Servir o frontend buildado
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
@@ -147,6 +157,7 @@ app.use('/covers', (req, res, next) => {
 const authRouter = require('./auth');
 const subscriptionRouter = require('./subscription');
 const adminRouter = require('./admin');
+const settingsRouter = require('./settings');
 const { extractUser } = require('./middleware');
 const db = require('./db');
 
@@ -166,6 +177,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/sub', subscriptionRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/settings', settingsRouter);
 
 // Ler livro — redireciona para Google Drive View (somente assinantes)
 app.get('/api/read/:fileId', (req, res) => {

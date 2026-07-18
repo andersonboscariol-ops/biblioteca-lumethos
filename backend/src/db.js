@@ -94,7 +94,7 @@ function getUserByEmail(email) {
 
 function getUserById(id) {
   const d = getDb();
-  return d.prepare('SELECT id, name, email, phone, created_at FROM users WHERE id = ?').get(id);
+  return d.prepare('SELECT id, name, email, phone, created_at, avatar_url FROM users WHERE id = ?').get(id);
 }
 
 function isAdmin(email) {

@@ -10,6 +10,7 @@ import Footer from './components/footer/Footer'
 import Home from './pages/home/Home'
 import Details from './pages/details/Details'
 import Reader from './pages/reader/Reader'
+import Settings from './pages/settings/Settings'
 import { Favorites, Downloads, History, Notes } from './pages/explore/Explore'
 import { books, categories } from './data/catalog'
 
@@ -150,6 +151,7 @@ export default function App() {
                 <Route path="/downloads" element={<Downloads />} />
                 <Route path="/historico" element={<History />} />
                 <Route path="/anotacoes" element={<Notes />} />
+                <Route path="/configuracoes" element={<Settings />} />
                 <Route path="/estudos" element={<BibliotecaPage />} />
                 <Route path="*" element={<PageNotFound />} />
               </Routes>

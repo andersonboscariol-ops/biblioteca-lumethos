@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Bell, ChevronDown, User, Settings, LogOut, BookOpen, Menu } from 'lucide-react'
 
+const NAV_ACTIONS = [
+  { icon: User, label: 'Perfil' },
+  { icon: Settings, label: 'Configurações', path: '/configuracoes' },
+  { icon: LogOut, label: 'Sair', danger: true },
+]
+
 export default function Header({ toggleSidebar }) {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
@@ -97,18 +103,24 @@ export default function Header({ toggleSidebar }) {
                   className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-bg-card border border-border-strong shadow-dropdown overflow-hidden"
                 >
                   <div className="p-1.5">
-                    {[
-                      { icon: User, label: 'Perfil' },
-                      { icon: Settings, label: 'Configurações' },
-                      { icon: LogOut, label: 'Sair', danger: true },
-                    ].map((item, i) => (
-                      <button key={i}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg smooth ${
-                          item.danger ? 'text-error hover:bg-error/10' : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-                        }`}>
-                        <item.icon className="w-3.5 h-3.5" />
-                        {item.label}
-                      </button>
+                    {NAV_ACTIONS.map((item, i) => (
+                      item.path ? (
+                        <button key={i} onClick={() => { navigate(item.path); setShowUser(false) }}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg smooth ${
+                            item.danger ? 'text-error hover:bg-error/10' : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+                          }`}>
+                          <item.icon className="w-3.5 h-3.5" />
+                          {item.label}
+                        </button>
+                      ) : (
+                        <button key={i}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg smooth ${
+                            item.danger ? 'text-error hover:bg-error/10' : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+                          }`}>
+                          <item.icon className="w-3.5 h-3.5" />
+                          {item.label}
+                        </button>
+                      )
                     ))}
                   </div>
                 </motion.div>
