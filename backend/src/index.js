@@ -27,7 +27,7 @@ app.use(helmet({
       fontSrc: ["'self'", 'https:', 'data:'],
       formAction: ["'self'"],
       frameAncestors: ["'self'"],
-      frameSrc: ["'self'", "https://drive.google.com"],
+      frameSrc: ["'self'", "https://drive.google.com", "https://docs.google.com"],
       baseUri: ["'self'"],
       objectSrc: ["'none'"],
     }
@@ -47,6 +47,11 @@ app.use(function(req, res, next) {
     res.setHeader('Expires', '0');
   }
   next();
+});
+
+// === Root — Login Page (fora do static pra nao pegar index.html) ===
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist/login.html'));
 });
 
 // Servir o frontend buildado
