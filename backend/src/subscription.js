@@ -3,6 +3,7 @@ const express = require('express');
 const db = require('./db');
 const { requireAuth, extractUser } = require('./middleware');
 const { sendWhatsAppMessage } = require('./whatsapp');
+const { sendCredentialsEmail, sendPurchaseNotification } = require('./email');
 
 const router = express.Router();
 
@@ -190,6 +191,20 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         }
 
         console.log(`[sub] Subscription activated for user ${userId}`);
+
+        // Send email to subscriber
+        try {
+          const user = db.getUserByIdWithPassword(userId);
+          if (user && user.email) {
+            sendCredentialsEmail(user.email, user.name, user.email, user.plain_password || 'Defina sua senha no próximo login', {
+              planName: 'Biblioteca Lumethos — Assinatura Anual',
+              price: 'R$ 49,90'
+            });
+            sendPurchaseNotification(user.name, user.email, user.phone || '', 'R$ 49,90', 'Biblioteca Lumethos — Assinatura Anual');
+          }
+        } catch (e) {
+          console.error('[sub] Error sending email:', e.message);
+        }
 
         // Send WhatsApp message to subscriber
         try {

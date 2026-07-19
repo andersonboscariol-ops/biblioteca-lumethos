@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Biblioteca Teológica do Pregador — Login</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0D1B2A;
+  --bg-secondary: #0a1628;
+  --bg-tertiary: #0f1d30;
+  --bg-card: rgba(255,255,255,0.03);
+  --bg-glass: rgba(255,255,255,0.04);
+  --border-color: rgba(199,154,46,0.12);
+  --border-glass: rgba(255,255,255,0.06);
+  --gold: #C79A2E;
+  --gold-dark: #a7811e;
+  --gold-light: #e0b84c;
+  --gold-glow: rgba(199,154,46,0.25);
+  --text-primary: #E8E6E3;
+  --text-secondary: #9BA4B0;
+  --text-dim: #6B7280;
+  --success: #22c55e;
+  --success-glow: rgba(34,197,94,0.2);
+  --warning: #eab308;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --glass-bg: rgba(13,27,42,0.6);
+  --glass-border: rgba(255,255,255,0.06);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 10% 10%, rgba(199,154,46,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(59,130,246,0.03) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(199,154,46,0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(199,154,46,0.5); }
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.fade-in { animation: fadeIn .35s cubic-bezier(.4,0,.2,1); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== LOGIN ===== */
+.login-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #0a1628 0%, #0D1B2A 50%, #07152b 100%);
+  padding: 20px;
+}
+.login-page::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(199,154,46,0.04) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(199,154,46,0.02) 0%, transparent 40%);
+}
+.login-card {
+  display: flex; max-width: 860px; width: 100%; border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+.login-left {
+  flex: 1; background: linear-gradient(160deg, #132f5a 0%, #0b2242 45%, #07152b 100%);
+  padding: 24px 36px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.login-left::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(199,154,46,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(199,154,46,0.05) 0%, transparent 50%);
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.login-badge {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold);
+  padding: 6px 16px; border: 1px solid rgba(199,154,46,0.3); border-radius: 20px;
+  margin-bottom: 20px; font-weight: 600; z-index: 1;
+}
+.login-left h1 { color: #fff; font-size: 20px; font-weight: 700; text-align: center; z-index: 1; margin-bottom: 8px; font-family: 'Libre Baskerville', serif; white-space: nowrap; }
+.login-left p { color: var(--text-secondary); font-size: 13px; text-align: center; z-index: 1; line-height: 1.5; }
+.login-logo { width: 100%; max-width: 240px; margin-bottom: 16px; z-index: 1; }
+.login-logo img { width: 100%; height: auto; }
+
+.login-right {
+  flex: 1; background: #fff; padding: 48px 36px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.login-right h2 { color: #1a1a1a; font-size: 22px; font-weight: 700; margin-bottom: 4px; text-align: center; }
+.login-right .login-sub { color: #666; font-size: 13px; margin-bottom: 28px; text-align: center; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; color: #333; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.form-group input {
+  width: 100%; padding: 11px 14px; border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; font-family: 'Inter', sans-serif; transition: all .25s;
+  outline: none; background: #f9fafb;
+}
+.form-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(199,154,46,0.15); background: #fff; }
+.login-btn {
+  width: 100%; padding: 12px; background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all .3s; font-family: 'Inter', sans-serif;
+  position: relative; overflow: hidden;
+}
+.login-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+  transform: translateX(-100%); transition: transform .5s;
+}
+.login-btn:hover::after { transform: translateX(100%); }
+.login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--gold-glow); background: linear-gradient(135deg, var(--gold-light), var(--gold)); }
+.login-btn:active { transform: scale(.98); }
+.login-btn:disabled { opacity: .6; cursor: not-allowed; }
+.login-error { color: var(--danger); font-size: 13px; margin-top: 12px; text-align: center; display: none; }
+.login-error.show { display: block; }
+.login-success { color: var(--success); font-size: 13px; margin-top: 12px; text-align: center; display: none; }
+.login-success.show { display: block; }
+.login-footer { margin-top: 16px; text-align: center; font-size: 12px; color: #999; }
+.login-footer a { color: var(--gold); text-decoration: none; cursor: pointer; font-weight: 600; }
+.login-footer a:hover { text-decoration: underline; }
+.login-footer a.external-link { color: var(--gold); text-decoration: none; font-weight: 600; cursor: pointer; }
+.login-footer a.external-link:hover { text-decoration: underline; }
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 40px !important; }
+.toggle-password {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: 6px;
+  color: #999; transition: color .2s; line-height: 1;
+}
+.toggle-password:hover { color: var(--gold); }
+.toggle-password svg { display: block; width: 16px; height: 16px; }
+#register-section { display: none; }
+
+@media (max-width: 640px) {
+  .login-page { padding: 0; align-items: stretch; }
+  .login-card { flex-direction: column; border-radius: 0; box-shadow: none; min-height: auto; }
+  .login-left { padding: 36px 24px; }
+  .login-left h1 { font-size: 16px; }
+  .login-left p { font-size: 12px; }
+  .login-logo { max-width: 160px; }
+  .login-right { padding: 24px 20px; }
+  .login-right h2 { font-size: 18px; }
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ===== MOBILE HOME ICON ===== */
+.mobile-home-icon {
+  position: absolute; top: 10px; left: 10px; z-index: 999;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s;
+}
+.mobile-home-icon:hover {
+  background: rgba(255,255,255,0.12);
+  transform: scale(1.05);
+}
+.mobile-home-icon svg {
+  width: 18px; height: 18px;
+  stroke: rgba(255,255,255,0.4);
+  fill: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-home-icon { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<div id="login-page" class="login-page">
+  <div class="login-card fade-in">
+
+    <!-- LEFT -->
+    <div class="login-left">
+      <span class="login-badge">BIBLIOTECA TEOLÓGICA</span>
+      <a href="https://institutolumethos.online" class="mobile-home-icon" aria-label="Voltar ao Instituto">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;stroke:rgba(255,255,255,0.5);fill:none;">
+          <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      </a>
+      <div class="login-logo">
+        <img src="/logo-biblioteca.png" alt="Biblioteca Teológica do Pregador">
+      </div>
+      <h1>Biblioteca Teológica do Pregador</h1>
+      <p>Acesse uma coleção completa de livros teológicos, comentários bíblicos e materiais de estudo online.</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="login-right">
+
+      <!-- LOGIN -->
+      <div id="login-section">
+        <h2>Bem-vindo de volta</h2>
+        <p class="login-sub">Faça login para continuar</p>
+
+        <form id="loginForm" autocomplete="on" novalidate>
+          <div class="form-group"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com" required autocomplete="email"></div>
+          <div class="form-group"><label>Senha</label>
+            <div class="password-wrapper">
+              <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)" tabindex="-1" aria-label="Mostrar senha">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="login-btn" id="loginBtn">Entrar</button>
+        </form>
+
+        <div id="login-error" class="login-error"></div>
+
+        <div class="login-footer">Ainda não tem conta? <a href="https://institutolumethos.online/biblioteca" target="_blank" rel="noopener noreferrer" style="color:#C79A2E;text-decoration:none;font-weight:600;">Cadastre-se</a></div>
+        <div class="login-footer"><a href="https://institutolumethos.online" style="color:#C79A2E;text-decoration:none;font-weight:600;">← Voltar ao Instituto</a></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="register-section">
+        <h2>Criar sua conta</h2>
+        <p class="login-sub">Cadastre-se e explore nossa biblioteca</p>
+
+        <form id="registerForm" autocomplete="on" novalidate>
+          <div class="form-group"><label>Nome completo</label><input type="text" id="regName" placeholder="Seu nome" required autocomplete="name"></div>
+          <div class="form-group"><label>E-mail</label><input type="email" id="regEmail" placeholder="seu@email.com" required autocomplete="email"></div>
+          <div class="form-group"><label>Senha</label>
+            <div class="password-wrapper">
+              <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+              <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)" tabindex="-1" aria-label="Mostrar senha">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="login-btn" id="registerBtn">Criar Conta</button>
+        </form>
+
+        <div id="register-msg" class="login-error"></div>
+
+        <div class="login-footer">Já tem conta? <a id="showLoginLink">Fazer login</a></div>
+        <div class="login-footer"><a href="https://institutolumethos.online" style="color:#C79A2E;text-decoration:none;font-weight:600;">← Voltar ao Instituto</a></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var API = window.location.origin;
+  var loginSection = document.getElementById('login-section');
+  var registerSection = document.getElementById('register-section');
+  var loginForm = document.getElementById('loginForm');
+  var registerForm = document.getElementById('registerForm');
+  var loginError = document.getElementById('login-error');
+  var registerMsg = document.getElementById('register-msg');
+  var loginBtn = document.getElementById('loginBtn');
+  var registerBtn = document.getElementById('registerBtn');
+
+  document.getElementById('showLoginLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    loginSection.style.display = 'block';
+    registerSection.style.display = 'none';
+    registerMsg.className = 'login-error';
+  });
+
+  function setLoading(btn, loading, text) {
+    if (loading) {
+      btn.disabled = true;
+      btn.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;margin-right:6px;vertical-align:middle;"></span> ' + text;
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = text;
+    }
+  }
+
+  function showError(el, text) {
+    el.textContent = text;
+    el.className = 'login-error show';
+  }
+
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    loginError.className = 'login-error';
+    setLoading(loginBtn, true, 'Entrando...');
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    }).then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
+    .then(function(res) {
+      if (res.status !== 200 && res.status !== 201) throw new Error(res.data.error || 'Email ou senha inválidos');
+      localStorage.setItem('biblioteca_token', res.data.token);
+      window.location.href = '/app';
+    }).catch(function(err) {
+      showError(loginError, err.message);
+      setLoading(loginBtn, false, 'Entrar');
+    });
+  });
+
+  registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    window.location.href = 'https://institutolumethos.online/biblioteca';
+  });
+
+  var token = localStorage.getItem('biblioteca_token');
+  if (token) {
+    fetch(API + '/api/auth/me', { headers: { 'Authorization': '***' + token } })
+    .then(function(r) { if (r.ok) window.location.href = '/app'; })
+    .catch(function() {});
+  }
+})();
+
+function togglePassword(inputId, btn) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+  var isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  btn.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
+}
+</script>
+
+</body>
+</html>

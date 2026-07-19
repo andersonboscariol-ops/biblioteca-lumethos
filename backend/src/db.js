@@ -21,13 +21,20 @@ const ADMIN_EMAIL = 'anderson.boscariol@gmail.com';
 function initTables() {
   // Add phone column if not exists (safe migration)
   const hasPhone = db.prepare("PRAGMA table_info('users')").all().some(c => c.name === 'phone');
+  const hasPlainPw = db.prepare("PRAGMA table_info('users')").all().some(c => c.name === 'plain_password');
   
+  if (!hasPlainPw) {
+    db.exec("ALTER TABLE users ADD COLUMN plain_password TEXT");
+    console.log('[db] Added plain_password column');
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      plain_password TEXT,
       phone TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
@@ -80,10 +87,10 @@ function initTables() {
 }
 
 // === User Queries ===
-function createUser(name, email, passwordHash, phone) {
+function createUser(name, email, passwordHash, phone, plainPassword) {
   const d = getDb();
-  const stmt = d.prepare('INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)');
-  const result = stmt.run(name, email, passwordHash, phone || null);
+  const stmt = d.prepare('INSERT INTO users (name, email, password_hash, plain_password, phone) VALUES (?, ?, ?, ?, ?)');
+  const result = stmt.run(name, email, passwordHash, plainPassword || null, phone || null);
   return result.lastInsertRowid;
 }
 
@@ -95,6 +102,11 @@ function getUserByEmail(email) {
 function getUserById(id) {
   const d = getDb();
   return d.prepare('SELECT id, name, email, phone, created_at, avatar_url FROM users WHERE id = ?').get(id);
+}
+
+function getUserByIdWithPassword(id) {
+  const d = getDb();
+  return d.prepare('SELECT id, name, email, phone, plain_password FROM users WHERE id = ?').get(id);
 }
 
 function isAdmin(email) {
@@ -203,5 +215,6 @@ module.exports = {
   getSetting,
   setSetting,
   updateUserPhone,
-  getSubscriberWithPassword
+  getSubscriberWithPassword,
+  getUserByIdWithPassword
 };

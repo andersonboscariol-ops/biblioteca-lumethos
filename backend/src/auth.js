@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const userId = db.createUser(name, email, hash);
+    const userId = db.createUser(name, email, hash, null, password);
 
     // Create empty subscription record
     const token = generateToken(userId);
