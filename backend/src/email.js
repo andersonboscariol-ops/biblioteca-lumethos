@@ -5,7 +5,7 @@ const FROM_EMAIL = 'biblioteca@institutolumethos.online';
 const FROM_NAME = 'Biblioteca Lumethos';
 const REPLY_TO = 'instituto.lumethos@gmail.com';
 const NOTIFY_TO = 'instituto.lumethos@gmail.com';
-const LOGO_URL = 'https://biblioteca.institutolumethos.online/logo-horizontal.png';
+const LOGO_URL = 'https://biblioteca.institutolumethos.online/assets/logo-email-premium-300.png';
 
 let resend = null;
 
@@ -23,7 +23,7 @@ function getClient() {
 }
 
 // ======================================================================
-// 1️⃣ EMAIL PARA O CLIENTE — Credenciais de acesso (versão premium)
+// 1️⃣ EMAIL PARA O CLIENTE — Credenciais de acesso
 // ======================================================================
 async function sendCredentialsEmail(to, name, email, password, options = {}) {
   const client = getClient();
@@ -100,548 +100,280 @@ async function sendPurchaseNotification(customerName, customerEmail, customerPho
 }
 
 // ======================================================================
-// TEMPLATES — CLIENTE
+// TEMPLATES — CLIENTE (direto, nobre, sem excesso)
 // ======================================================================
 function buildClientHtml(name, email, password, loginUrl, price, planName) {
-  const C = {
-    navy: '#0D1B2A',
-    navyLight: '#142D4C',
-    blueText: '#0D1B2A',
-    gold: '#C79A2E',
-    bg: '#ffffff',
-    cardBg: '#F8F7F4',
-    border: '#E0DDD6',
-    muted: '#8A8780',
-    text: '#0D1B2A',
-    textSoft: '#4A4850',
-  };
+  const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const e = esc, ea = esc;
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblioteca Lumethos — Confirmação</title>
+  <title>Biblioteca Lumethos</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <o:OfficeDocumentSettings>
+      <o:AllowPNG/>
+      <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+  </xml>
+  <![endif]-->
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
-      background: #f5f3ed;
-      color: ${C.text};
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: ${C.bg};
-    }
-
-    /* ===== TOP BORDER ===== */
-    .ornament-top {
-      height: 5px;
-      background: linear-gradient(90deg,
-        #f5e7c8 0%, ${C.gold} 20%, #f5d78e 40%, ${C.gold} 60%, #f5d78e 80%, #f5e7c8 100%);
-    }
-
-    /* ===== HEADER ===== */
-    .header {
-      text-align: center;
-      padding: 36px 28px 16px;
-      background: ${C.bg};
-    }
-    .header img.logo {
-      max-width: 300px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    .header .divider-line {
-      width: 70px;
-      height: 2px;
-      margin: 12px auto;
-      background: linear-gradient(90deg, transparent, ${C.gold}, transparent);
-    }
-    .header .subtitle {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      color: ${C.muted};
-    }
-
-    /* ===== SEAL ===== */
-    .seal {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: ${C.cardBg};
-      border: 1px solid rgba(199, 154, 46, 0.25);
-      border-radius: 50px;
-      padding: 5px 16px 5px 12px;
-      margin: 10px 0 4px;
-      font-size: 10px;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: ${C.gold};
-    }
-    .seal .dot-green {
-      width: 8px; height: 8px;
-      background: #22c55e;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    /* ===== GREETING ===== */
-    .greeting {
-      text-align: center;
-      padding: 20px 28px 2px;
-      font-size: 15px;
-      color: ${C.textSoft};
-    }
-    .greeting strong {
-      color: ${C.navy};
-      font-weight: 700;
-    }
-
-    /* ===== CREDENTIALS CARD ===== */
-    .credentials-card {
-      margin: 20px 28px;
-      background: ${C.cardBg};
-      border: 1px solid ${C.border};
-      border-radius: 16px;
-      padding: 28px 24px;
-      position: relative;
-    }
-    .credentials-card::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: 40px; right: 40px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, ${C.gold}, transparent);
-    }
-    .cred-row {
-      margin-bottom: 20px;
-    }
-    .cred-row:last-child { margin-bottom: 0; }
-    .cred-label {
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 2.2px;
-      color: ${C.muted};
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    .cred-box {
-      display: block;
-      padding: 12px 16px;
-      background: ${C.bg};
-      border: 1px solid ${C.border};
-      border-radius: 10px;
-      font-size: 16px;
-      color: ${C.text};
-      word-break: break-all;
-    }
-    .cred-box.email {
-      color: ${C.navy};
-      font-weight: 500;
-    }
-    .cred-box.password {
-      font-family: 'SF Mono', 'Courier New', 'Fira Code', monospace;
-      font-size: 28px;
-      letter-spacing: 4px;
-      text-align: center;
-      color: ${C.navy};
-      font-weight: 700;
-      background: #FCFAF5;
-      border: 1.5px solid ${C.navy};
-      user-select: all;
-      -webkit-user-select: all;
-      -moz-user-select: all;
-    }
-    .cred-hint {
-      font-size: 11px;
-      color: ${C.muted};
-      margin-top: 6px;
-      text-align: center;
-    }
-
-    /* ===== CTA ===== */
-    .cta-wrapper {
-      text-align: center;
-      margin: 28px 28px 24px;
-    }
-    .cta-btn {
-      display: inline-block;
-      background: ${C.navy};
-      color: #ffffff !important;
-      text-decoration: none !important;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      padding: 16px 48px;
-      border-radius: 50px;
-    }
-
-    /* ===== INFO GRID ===== */
-    .info-grid {
-      margin: 0 28px 20px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .info-item {
-      background: ${C.cardBg};
-      border: 1px solid ${C.border};
-      border-radius: 12px;
-      padding: 16px 12px;
-      text-align: center;
-    }
-    .info-item .num {
-      font-size: 20px;
-      font-weight: 700;
-      color: ${C.navy};
-    }
-    .info-item .desc {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: ${C.muted};
-      margin-top: 3px;
-    }
-
-    /* ===== BENEFITS ===== */
-    .benefits-section {
-      margin: 0 28px 20px;
-      padding: 24px 28px;
-      background: ${C.cardBg};
-      border: 1px solid ${C.border};
-      border-radius: 14px;
-    }
-    .benefits-section h3 {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      color: ${C.navy};
-      text-align: center;
-      margin-bottom: 16px;
-      font-weight: 600;
-    }
-    .benefits-section ul {
-      list-style: none;
-      padding: 0;
-    }
-    .benefits-section ul li {
-      font-size: 13px;
-      color: ${C.textSoft};
-      padding: 8px 0;
-      border-bottom: 1px solid ${C.border};
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .benefits-section ul li:last-child { border-bottom: none; }
-    .benefits-section ul li::before {
-      content: '✦';
-      color: ${C.gold};
-      font-size: 11px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      text-align: center;
-      padding: 28px 28px 32px;
-      border-top: 1px solid ${C.border};
-      background: ${C.cardBg};
-    }
-    .footer .brand {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 15px;
-      color: ${C.navy};
-      font-weight: 700;
-    }
-    .footer .tagline {
-      font-size: 10px;
-      color: ${C.muted};
-      margin: 3px 0 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .footer .links a {
-      color: ${C.navy};
-      text-decoration: none;
-      font-size: 12px;
-      margin: 0 6px;
-    }
-    .footer .links .sep {
-      color: ${C.border};
-      margin: 0 2px;
-    }
-    .footer .disclaimer {
-      font-size: 10px;
-      color: ${C.muted};
-      margin-top: 14px;
-      line-height: 1.5;
-    }
-    .footer .copyright {
-      font-size: 10px;
-      color: ${C.muted};
-      margin-top: 12px;
-    }
-
-    @media (max-width: 480px) {
-      .header { padding: 28px 20px 12px; }
-      .header img.logo { max-width: 240px; }
-      .credentials-card { margin: 16px 16px; padding: 20px 16px; }
-      .cred-box.password { font-size: 22px; letter-spacing: 2px; }
-      .info-grid { grid-template-columns: 1fr 1fr; margin: 0 16px 16px; gap: 8px; }
-      .benefits-section { margin: 0 16px 16px; padding: 20px 18px; }
-      .cta-wrapper { margin: 20px 16px; }
-      .cta-btn { font-size: 12px; padding: 14px 32px; }
-    }
+    /* Force email links to gold, prevent blue auto-links */
+    a { color: #E8C75A !important; text-decoration: none !important; }
+    a:link, a:visited, a:hover, a:active { color: #E8C75A !important; text-decoration: none !important; }
+    u + #body a { color: #E8C75A !important; text-decoration: none !important; }
+    /* Outlook fix */
+    .ExternalClass, .ReadMsgBody { width: 100%; }
+    .ExternalClass p, .ExternalClass span { line-height: 100%; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="ornament-top"></div>
+<body id="body" style="margin:0; padding:0; background-color:#0A1E3D;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0A1E3D;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background-color:#0A1E3D;">
 
-    <!-- HEADER -->
-    <div class="header">
-      <img src="${escAttr(LOGO_URL)}" alt="Instituto Lumethos" class="logo" width="300">
-      <div class="divider-line"></div>
-      <div class="subtitle">Confirmação de Assinatura</div>
-      <div class="seal">
-        <span class="dot-green"></span>
-        Assinatura Ativa
-      </div>
-    </div>
+            <!-- Gold top border -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="height:5px; background:linear-gradient(90deg, #0A1E3D 0%, #D4AF37 20%, #E8C75A 50%, #D4AF37 80%, #0A1E3D 100%);"></td></tr>
+            </table>
 
-    <!-- GREETING -->
-    <div class="greeting">
-      <p>Prezado(a) <strong>${esc(name)}</strong>, é com grande satisfação que recebemos você como assinante!</p>
-    </div>
+            <!-- Logo -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="text-align:center; padding:32px 28px 12px;">
+                  <img src="${ea(LOGO_URL)}" alt="Instituto Lumethos" width="280" style="max-width:100%; height:auto; border:0; display:block; margin:0 auto;">
+                </td>
+              </tr>
+            </table>
 
-    <!-- CREDENTIALS -->
-    <div class="credentials-card">
-      <div class="cred-row">
-        <div class="cred-label">📧 Seu Email de Acesso</div>
-        <div class="cred-box email">${esc(email.toLowerCase())}</div>
-      </div>
-      <div class="cred-row">
-        <div class="cred-label">🔑 Sua Senha</div>
-        <div class="cred-box password">${esc(password)}</div>
-        <div class="cred-hint">Clique sobre a senha para selecionar e copie com Ctrl+C ou ⌘C</div>
-      </div>
-    </div>
+            <!-- Greeting -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:8px 28px 4px; text-align:center; font-family:Georgia,'Times New Roman',serif; font-size:16px; color:#C8C4B8; line-height:1.6;">
+                  <p style="margin:0;">Prezado(a) <strong style="color:#E8C75A;">${e(name)}</strong>, sua assinatura foi ativada. Abaixo estão seus dados de acesso.</p>
+                </td>
+              </tr>
+            </table>
 
-    <!-- CTA -->
-    <div class="cta-wrapper">
-      <a href="${escAttr(loginUrl)}" class="cta-btn">✦ Acessar Minha Biblioteca ✦</a>
-    </div>
+            <!-- Credentials card -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:16px 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg, #1B2D4A, #122239); border:1px solid rgba(212,175,55,0.15); border-radius:12px;">
+                    <tr><td colspan="2" style="height:2px; background:linear-gradient(90deg,transparent,#D4AF37,transparent);"></td></tr>
+                    <tr>
+                      <td style="padding:16px 20px 4px; text-align:center; font-family:'Helvetica Neue',Arial,sans-serif; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:#D4AF37;">
+                        Dados de Acesso
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 20px 4px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#8A8FA0; padding-bottom:4px;">Email</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.08); border-radius:8px; font-size:15px; color:#F5F0E0; white-space:nowrap;">${e(email.toLowerCase())}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 20px 16px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#8A8FA0; padding-bottom:4px;">Senha</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:10px 14px; background:rgba(232,199,90,0.06); border:2px solid rgba(232,199,90,0.5); border-radius:8px; font-family:'Courier New',monospace; font-size:32px; letter-spacing:5px; text-align:center; color:#F5F0E0; font-weight:700;">${e(password)}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
 
-    <!-- INFO -->
-    <div class="info-grid">
-      <div class="info-item">
-        <div class="num">${price}</div>
-        <div class="desc">Investimento</div>
-      </div>
-      <div class="info-item">
-        <div class="num">📖 1000+</div>
-        <div class="desc">Obras Teológicas</div>
-      </div>
-      <div class="info-item">
-        <div class="num">📚 36</div>
-        <div class="desc">Categorias</div>
-      </div>
-      <div class="info-item">
-        <div class="num">📱</div>
-        <div class="desc">Leitura Mobile</div>
-      </div>
-    </div>
+            <!-- CTA -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="text-align:center; padding:4px 28px 20px;">
+                  <!--[if mso]>
+                  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${ea(loginUrl)}" style="height:46px;v-text-anchor:middle;width:300px;" arcsize="50%" strokecolor="#D4AF37" fillcolor="#D4AF37">
+                    <w:anchorlock/>
+                    <center style="color:#0A1E3D; font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">Acessar Minha Biblioteca</center>
+                  </v:roundrect>
+                  <![endif]-->
+                  <a href="${ea(loginUrl)}" target="_blank" style="display:inline-block; background:linear-gradient(135deg,#D4AF37,#C99A2E); color:#0A1E3D; text-decoration:none; font-family:'Helvetica Neue',Arial,sans-serif; font-weight:800; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; padding:15px 44px; border-radius:50px;">
+                    Acessar Minha Biblioteca
+                  </a>
+                </td>
+              </tr>
+            </table>
 
-    <!-- BENEFITS -->
-    <div class="benefits-section">
-      <h3>✦ Sua Biblioteca Inclui ✦</h3>
-      <ul>
-        <li>Acesso completo a mais de 1.000 obras de teologia, comentários bíblicos e literatura cristã</li>
-        <li>Acervo organizado em 36 categorias para estudo sistemático da Palavra</li>
-        <li>Leitura online e download de PDFs para consulta offline onde estiver</li>
-        <li>Novos títulos adicionados mensalmente ao acervo</li>
-        <li>Acesso ilimitado durante todo o período da sua assinatura</li>
-      </ul>
-    </div>
+            <!-- Footer -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:20px 28px 24px; border-top:1px solid rgba(212,175,55,0.08); background:#122239; text-align:center;">
+                  <p style="margin:0 0 8px; font-family:Georgia,'Times New Roman',serif; font-size:14px; color:#D4AF37;">Instituto Lumethos</p>
+                  <p style="margin:0 0 10px; font-family:Georgia,serif; font-size:11px; font-style:italic; color:#8A8FA0;">A Maior Biblioteca Teológica Digital do Brasil</p>
+                  <p style="margin:0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:10px; color:#8A8FA0; line-height:1.5;">
+                    Para suporte, responda a este email.<br>
+                    &copy; 2026 Instituto Lumethos
+                  </p>
+                </td>
+              </tr>
+            </table>
 
-    <!-- FOOTER -->
-    <div class="footer">
-      <div class="brand">Instituto Lumethos</div>
-      <div class="tagline">A Maior Biblioteca Teológica Digital do Brasil</div>
-      <div class="links">
-        <a href="https://institutolumethos.online">institutolumethos.online</a>
-        <span class="sep">|</span>
-        <a href="https://biblioteca.institutolumethos.online">Biblioteca</a>
-      </div>
-      <div class="disclaimer">
-        Este é um email automático. Se você não realizou esta compra, ignore esta mensagem.<br>
-        Para suporte, responda a este email ou entre em contato pelo nosso WhatsApp.
-      </div>
-      <div class="copyright">
-        &copy; ${new Date().getFullYear()} Instituto Lumethos — Todos os direitos reservados
-      </div>
-    </div>
-  </div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>`;
 }
 
 function buildClientText(name, email, password, loginUrl) {
-  return `═══════════════════════════════════════════
+  return `
 INSTITUTO LUMETHOS — BIBLIOTECA TEOLÓGICA
-═══════════════════════════════════════════
 
-Prezado(a) ${name},
+Prezado(a) ${name}, sua assinatura foi ativada.
 
-Sua assinatura da Biblioteca Lumethos foi ativada com sucesso!
-
-─── DADOS DE ACESSO ───
-
-Email: ${email}
-Senha: ${password}
+DADOS DE ACESSO
+  Email: ${email}
+  Senha: ${password}
 
 Acesse: ${loginUrl}
 
-✦ 1000+ obras teológicas
-✦ 36 categorias
-✦ Leitura online e download
-
-Para qualquer dúvida, responda a este email.
-
-─── Instituto Lumethos ───
-A Maior Biblioteca Teológica Digital do Brasil`;
+Instituto Lumethos — A Maior Biblioteca Teológica Digital do Brasil
+`;
 }
 
 // ======================================================================
 // TEMPLATES — NOTIFICAÇÃO INTERNA
 // ======================================================================
 function buildNotificationHtml(customerName, customerEmail, customerPhone, price, planName, dataHora) {
+  const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const e = esc;
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background: #0b0b12;
-      color: #e0e0e0;
-      line-height: 1.6;
-    }
-    .container { max-width: 560px; margin: 0 auto; padding: 32px 24px; }
-    .header { text-align: center; padding: 24px 0; border-bottom: 2px solid #d4af37; }
-    .header h1 { color: #d4af37; font-size: 22px; }
-    .header .time { color: #888; font-size: 13px; margin-top: 4px; }
-    .badge {
-      display: inline-block;
-      background: #22c55e;
-      color: #000;
-      font-weight: 700;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-    }
-    .content { padding: 24px 0; }
-    .field {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .field .label { color: #888; font-size: 13px; }
-    .field .value { color: #f0e8d0; font-weight: 600; font-size: 14px; }
-    .field:last-child { border-bottom: none; }
-    .price-row {
-      background: rgba(212,175,55,0.08);
-      border: 1px solid rgba(212,175,55,0.2);
-      border-radius: 12px;
-      margin: 16px 0;
-    }
-    .price-row .value { color: #d4af37; font-size: 18px; }
-    .footer { text-align: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); color: #666; font-size: 12px; }
-    @media (max-width: 480px) {
-      .field { flex-direction: column; gap: 4px; }
-    }
-  </style>
+  <title>Nova Venda — Lumethos</title>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="badge">🛒 Nova Venda</div>
-      <h1>${esc(planName)}</h1>
-      <div class="time">${dataHora}</div>
-    </div>
-    <div class="content">
-      <div class="field price-row">
-        <span class="label">Valor</span>
-        <span class="value">${price}</span>
-      </div>
-      <div class="field">
-        <span class="label">Cliente</span>
-        <span class="value">${esc(customerName)}</span>
-      </div>
-      <div class="field">
-        <span class="label">Email</span>
-        <span class="value">${esc(customerEmail)}</span>
-      </div>
-      <div class="field">
-        <span class="label">WhatsApp</span>
-        <span class="value">${customerPhone ? esc(customerPhone) : '—'}</span>
-      </div>
-    </div>
-    <div class="footer">
-      <p>Biblioteca Lumethos — Sistema Automático de Notificações</p>
-      <p style="margin-top:4px;">institutolumethos.online</p>
-    </div>
-  </div>
+<body style="margin:0; padding:0; background-color:#F5EDDC;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5EDDC;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:520px;" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background-color:#0A1E3D; border-radius:10px; overflow:hidden;">
+
+            <!-- Ornament -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="height:4px; background:linear-gradient(90deg,#0A1E3D,#D4AF37,#E8C75A,#D4AF37,#0A1E3D);"></td></tr>
+            </table>
+
+            <!-- Header -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="text-align:center; padding:18px 20px 10px; border-bottom:1px solid rgba(212,175,55,0.12);">
+                  <p style="margin:0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#D4AF37;">✦ Nova Venda ✦</p>
+                  <p style="margin:6px 0 2px; font-family:Georgia,'Times New Roman',serif; font-size:16px; color:#E8C75A;">${e(planName)}</p>
+                  <p style="margin:0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:11px; color:#8A8FA0;">${e(dataHora)}</p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Content -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:14px 20px;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid rgba(212,175,55,0.20); border-radius:8px; background:linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); margin-bottom:8px;">
+                    <tr>
+                      <td style="padding:10px 16px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#8A8FA0;">Valor</td>
+                            <td style="text-align:right; font-size:17px; font-weight:700; color:#D4AF37;">${e(price)}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:7px 14px; border-bottom:1px solid rgba(212,175,55,0.06);">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#8A8FA0;">Cliente</td>
+                            <td style="text-align:right; font-size:13px; font-weight:600; color:#F0EDE4;">${e(customerName)}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:7px 14px; border-bottom:1px solid rgba(212,175,55,0.06);">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#8A8FA0;">Email</td>
+                            <td style="text-align:right; font-size:13px; font-weight:600; color:#F0EDE4;">${e(customerEmail)}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:7px 14px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#8A8FA0;">WhatsApp</td>
+                            <td style="text-align:right; font-size:13px; font-weight:600; color:#F0EDE4;">${customerPhone || '—'}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Footer -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="text-align:center; padding:14px 20px 18px; border-top:1px solid rgba(212,175,55,0.08); background:#122239;">
+                  <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:12px; color:#D4AF37;">Instituto Lumethos</p>
+                  <p style="margin:3px 0 0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:10px; color:#8A8FA0;">Sistema Automático de Notificações</p>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>`;
 }
 
 function buildNotificationText(customerName, customerEmail, customerPhone, price, planName, dataHora) {
-  return `═══════════════════════════════════
-🛒 NOVA VENDA — ${planName}
-═══════════════════════════════════
-Data/Hora: ${dataHora}
+  return `NOVA VENDA — ${planName}
+Data: ${dataHora}
 
 Cliente: ${customerName}
 Email: ${customerEmail}
 WhatsApp: ${customerPhone || '—'}
 Valor: ${price}
-───────────────────────────────────
-Biblioteca Lumethos — Notificação Automática`;
-}
 
-// ======================================================================
-// HELPERS
-// ======================================================================
-function esc(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function escAttr(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+Instituto Lumethos`;
 }
 
 module.exports = { sendCredentialsEmail, sendPurchaseNotification };

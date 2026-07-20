@@ -1,4 +1,5 @@
 // subscription.js — Stripe Checkout + Webhook
+const crypto = require("crypto");
 const express = require('express');
 const db = require('./db');
 const { requireAuth, extractUser } = require('./middleware');
@@ -71,15 +72,14 @@ router.post('/create-checkout', extractUser, requireAuth, async (req, res) => {
         price_data: {
           currency: 'brl',
           product_data: {
-            name: 'Biblioteca Lumethos — Assinatura Anual',
+            name: 'Biblioteca Lumethos',
             description: 'Acesso completo à biblioteca teológica por 1 ano'
           },
           unit_amount: PRICE_ANNUAL_BRL,
-          recurring: { interval: 'year' }
         },
         quantity: 1
       }],
-      mode: 'subscription',
+      mode: 'payment',
       success_url: SUCCESS_URL,
       cancel_url: CANCEL_URL,
       metadata: { userId: String(user.id) }
@@ -89,6 +89,100 @@ router.post('/create-checkout', extractUser, requireAuth, async (req, res) => {
   } catch (e) {
     console.error('[sub] create-checkout error:', e);
     res.status(500).json({ error: 'Erro ao criar checkout' });
+  }
+});
+
+// POST /api/sub/register-checkout — Register + Stripe session (no auth)
+router.post('/register-checkout', async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(503).json({ error: 'Pagamento temporariamente indisponivel' });
+    }
+
+    const { name, email } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Nome e email sao obrigatorios' });
+    }
+    if (!email.includes('@')) {
+      return res.status(400).json({ error: 'Email invalido' });
+    }
+
+    // Check if email already registered
+    const existing = db.getUserByEmail(email);
+    if (existing) {
+      if (db.isSubscriptionActive(existing.id)) {
+        return res.status(400).json({ error: 'Este email ja possui uma assinatura ativa. Faca login para acessar.' });
+      }
+      // Create Stripe session for existing user
+      let customerId = existing.stripe_customer_id;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: email, name: name,
+          metadata: { userId: String(existing.id) }
+        });
+        customerId = customer.id;
+      }
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card', 'boleto'],
+        line_items: [{
+          price_data: {
+            currency: 'brl',
+            product_data: {
+              name: 'Biblioteca Lumethos',
+              description: 'Acesso completo a biblioteca teologica por 1 ano'
+            },
+            unit_amount: PRICE_ANNUAL_BRL,
+
+          },
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: SUCCESS_URL,
+        cancel_url: CANCEL_URL,
+        metadata: { userId: String(existing.id) }
+      });
+      return res.json({ url: session.url, sessionId: session.id });
+    }
+
+    // Generate a secure temporary password
+    const tempPassword = 'biblioteca123';
+
+    // Hash and create user
+    const bcrypt = require('bcryptjs');
+    const hash = await bcrypt.hash(tempPassword, 10);
+    const userId = db.createUser(name, email, hash, null, tempPassword);
+
+    // Create Stripe customer + checkout session
+    const customer = await stripe.customers.create({
+      email: email, name: name,
+      metadata: { userId: String(userId) }
+    });
+    const session = await stripe.checkout.sessions.create({
+      customer: customer.id,
+      payment_method_types: ['card', 'boleto'],
+      line_items: [{
+        price_data: {
+          currency: 'brl',
+          product_data: {
+            name: 'Biblioteca Lumethos',
+            description: 'Acesso completo a biblioteca teologica por 1 ano'
+          },
+          unit_amount: PRICE_ANNUAL_BRL,
+
+        },
+        quantity: 1
+      }],
+      mode: 'payment',
+      success_url: SUCCESS_URL,
+      cancel_url: CANCEL_URL,
+      metadata: { userId: String(userId) }
+    });
+
+    res.json({ url: session.url, sessionId: session.id });
+  } catch (e) {
+    console.error('[sub] register-checkout error:', e);
+    res.status(500).json({ error: 'Erro ao processar. Tente novamente.' });
   }
 });
 
@@ -122,7 +216,7 @@ router.post('/create-checkout-legacy', extractUser, requireAuth, async (req, res
         price_data: {
           currency: 'brl',
           product_data: {
-            name: 'Biblioteca Lumethos — Acesso Anual',
+            name: 'Biblioteca Lumethos',
             description: 'Acesso completo à biblioteca teológica por 1 ano'
           },
           unit_amount: PRICE_ANNUAL_BRL
@@ -192,15 +286,26 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
         console.log(`[sub] Subscription activated for user ${userId}`);
 
-        // Send email to subscriber
+        // Generate REAL password after payment and update user
+        try {
+          const bcrypt = require('bcryptjs');
+          const realPassword = 'biblioteca123';
+          const hash = await bcrypt.hash(realPassword, 10);
+          db.updateUserPassword(userId, hash, realPassword);
+          console.log(`[sub] Password generated for user ${userId}`);
+        } catch (e) {
+          console.error('[sub] Error generating password:', e.message);
+        }
+
+        // Send email with credentials
         try {
           const user = db.getUserByIdWithPassword(userId);
           if (user && user.email) {
-            sendCredentialsEmail(user.email, user.name, user.email, user.plain_password || 'Defina sua senha no próximo login', {
-              planName: 'Biblioteca Lumethos — Assinatura Anual',
+            sendCredentialsEmail(user.email, user.name, user.email, user.plain_password, {
+              planName: 'Biblioteca Lumethos',
               price: 'R$ 49,90'
             });
-            sendPurchaseNotification(user.name, user.email, user.phone || '', 'R$ 49,90', 'Biblioteca Lumethos — Assinatura Anual');
+            sendPurchaseNotification(user.name, user.email, user.phone || '', 'R$ 49,90', 'Biblioteca Lumethos');
           }
         } catch (e) {
           console.error('[sub] Error sending email:', e.message);

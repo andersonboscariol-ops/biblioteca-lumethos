@@ -189,6 +189,11 @@ function updateUserPhone(userId, phone) {
   d.prepare("UPDATE users SET phone = ?, updated_at = datetime('now') WHERE id = ?").run(phone, userId);
 }
 
+function updateUserPassword(userId, passwordHash, plainPassword) {
+  const d = getDb();
+  d.prepare("UPDATE users SET password_hash = ?, plain_password = ?, updated_at = datetime('now') WHERE id = ?").run(passwordHash, plainPassword, userId);
+}
+
 function getSubscriberWithPassword(userId) {
   const d = getDb();
   return d.prepare('SELECT id, name, email, phone, password_hash FROM users WHERE id = ?').get(userId);
@@ -216,5 +221,6 @@ module.exports = {
   setSetting,
   updateUserPhone,
   getSubscriberWithPassword,
-  getUserByIdWithPassword
+  getUserByIdWithPassword,
+  updateUserPassword
 };

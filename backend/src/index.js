@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -36,6 +36,10 @@ app.use(helmet({
 app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
 app.use(compression()); // gzip/brotli
 app.use(cookieParser());
+
+// Stripe webhook MUST use raw body — mount BEFORE global express.json()
+app.use('/api/sub/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,6 +56,10 @@ app.use(function(req, res, next) {
 // === Root — Login Page (fora do static pra nao pegar index.html) ===
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist/login.html'));
+});
+
+app.get('/checkout', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist/checkout.html'));
 });
 
 // Servir o frontend buildado
@@ -110,12 +118,12 @@ app.use('/covers', (req, res, next) => {
   const fileId = path.parse(filename).name;
   // Ignorar se for capa-generica (já tentou acima)
   if (fileId && fileId !== 'capa-generica' && !fileId.includes('_')) {
-    const gdriveUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+    const gdriveUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
     console.log('[Cover proxy]', fileId, '→ Google Drive');
     try {
       const imgPath = filePath;
       const file = fs.createWriteStream(imgPath + '.download');
-      https.get(gdriveUrl, { timeout: 10000, headers: { 'User-Agent': 'Mozilla/5.0' } }, (gRes) => {
+      https.get(gdriveUrl, { timeout: 3000, headers: { 'User-Agent': 'Mozilla/5.0' } }, (gRes) => {
         // Verificar se é imagem válida pelo content-type
         const ct = gRes.headers['content-type'] || '';
         if (ct.startsWith('image/') && gRes.statusCode === 200) {
