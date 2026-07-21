@@ -297,15 +297,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           console.error('[sub] Error generating password:', e.message);
         }
 
-        // Send email with credentials
+        // Send email with credentials (with await to catch errors)
         try {
           const user = db.getUserByIdWithPassword(userId);
           if (user && user.email) {
-            sendCredentialsEmail(user.email, user.name, user.email, user.plain_password, {
+            await sendCredentialsEmail(user.email, user.name, user.email, user.plain_password, {
               planName: 'Biblioteca Lumethos',
               price: 'R$ 49,90'
             });
-            sendPurchaseNotification(user.name, user.email, user.phone || '', 'R$ 49,90', 'Biblioteca Lumethos');
+            await sendPurchaseNotification(user.name, user.email, user.phone || '', 'R$ 49,90', 'Biblioteca Lumethos');
           }
         } catch (e) {
           console.error('[sub] Error sending email:', e.message);
