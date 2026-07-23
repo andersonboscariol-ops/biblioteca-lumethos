@@ -67,4 +67,20 @@ router.post('/avatar', requireAuth, (req, res) => {
   });
 });
 
+// POST /api/settings/name — Update user name
+router.post('/name', requireAuth, (req, res) => {
+  var name = req.body && req.body.name && req.body.name.trim();
+  if (!name || name.length < 2) {
+    return res.status(400).json({ error: 'Nome deve ter pelo menos 2 caracteres' });
+  }
+  try {
+    db.getDb().prepare('UPDATE users SET name = ?, updated_at = datetime(\'now\') WHERE id = ?')
+      .run(name, req.user.id);
+    res.json({ message: 'Nome atualizado', name: name });
+  } catch (e) {
+    console.error('[settings] name error:', e);
+    res.status(500).json({ error: 'Erro interno ao atualizar nome' });
+  }
+});
+
 module.exports = router;
