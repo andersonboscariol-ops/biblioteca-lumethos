@@ -132,7 +132,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/app">
       <div className="flex min-h-screen bg-bg">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

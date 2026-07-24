@@ -123,24 +123,7 @@ export default function Sidebar({ open, onClose }) {
           ))}
         </nav>
 
-        {/* Perfil / Configurações */}
-        <div className="border-t border-border shrink-0">
-          <div className="px-2 py-2">
-            <button
-              onClick={() => { navigate('/configuracoes'); onClose?.() }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg smooth hover:bg-sidebar-hover text-text-secondary hover:text-text-primary group"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-amber-600 flex items-center justify-center font-bold text-sm text-white shadow-sm shrink-0">
-                <User className="w-4 h-4" />
-              </div>
-              <div className="flex-1 text-left min-w-0">
-                <p className="text-[13px] font-medium text-text-primary truncate">Minha Conta</p>
-                <p className="text-[10px] text-text-tertiary truncate">Plano Gratuito</p>
-              </div>
-              <Settings className="w-3.5 h-3.5 text-text-tertiary group-hover:text-gold-400 smooth shrink-0" />
-            </button>
-          </div>
-        </div>
+
       </aside>
     </>
   )

@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -36,10 +36,6 @@ app.use(helmet({
 app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
 app.use(compression()); // gzip/brotli
 app.use(cookieParser());
-
-// Stripe webhook MUST use raw body — mount BEFORE global express.json()
-app.use('/api/sub/webhook', express.raw({ type: 'application/json' }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -56,10 +52,6 @@ app.use(function(req, res, next) {
 // === Root — Login Page (fora do static pra nao pegar index.html) ===
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist/login.html'));
-});
-
-app.get('/checkout', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/dist/checkout.html'));
 });
 
 // Servir o frontend buildado
