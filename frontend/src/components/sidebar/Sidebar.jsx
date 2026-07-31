@@ -1,6 +1,6 @@
+import React, { useRef, useEffect, useCallback } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Home, Library, BookText, Star, Download, FilePen, History, BookOpen, Settings, User, LogOut, ChevronRight } from 'lucide-react'
+import { Home, Library, BookText, Star, Download, FilePen, History, BookOpen, Settings, User, LogOut, ChevronRight, X } from 'lucide-react'
 
 const sections = [
   {
@@ -34,6 +34,23 @@ const sections = [
 export default function Sidebar({ open, onClose }) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const sidebarRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handleOutside = (e) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
+        onClose()
+      }
+    }
+    // Usa click em vez de touchstart/mousedown pra capturar tudo no iOS
+    document.addEventListener('click', handleOutside, { passive: true })
+    document.addEventListener('touchstart', handleOutside, { passive: true })
+    return () => {
+      document.removeEventListener('click', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
+  }, [open, onClose])
 
   const isActive = (path) => {
     if (path === '/biblioteca') return pathname === '/biblioteca'
@@ -45,16 +62,14 @@ export default function Sidebar({ open, onClose }) {
   return (
     <>
       {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
+          onPointerDown={onClose}
         />
       )}
 
-      <aside className={`
+      <aside ref={sidebarRef} className={`
         fixed lg:sticky top-0 left-0 z-50 lg:z-10
         w-[220px] h-screen
         bg-sidebar border-r border-border-strong
@@ -62,15 +77,21 @@ export default function Sidebar({ open, onClose }) {
         transition-transform duration-300 ease-out
         ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-4 h-[60px] border-b border-border shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-gold-400 flex items-center justify-center shadow-gold-400/20">
-            <BookOpen className="w-4 h-4 text-white" />
+        {/* Logo + close button mobile */}
+        <div className="flex items-center justify-between gap-3 px-4 h-[60px] border-b border-border shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gold-400 flex items-center justify-center shadow-gold-400/20">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h1 className="text-sm font-heading font-bold text-text-primary tracking-tight">Lumethos</h1>
+              <p className="text-[8px] text-text-tertiary tracking-[0.15em] uppercase">Biblioteca</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-sm font-heading font-bold text-text-primary tracking-tight">Lumethos</h1>
-            <p className="text-[8px] text-text-tertiary tracking-[0.15em] uppercase">Biblioteca</p>
-          </div>
+          <button onClick={onClose}
+            className="lg:hidden w-7 h-7 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-bg-card smooth border border-border">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Início */}
