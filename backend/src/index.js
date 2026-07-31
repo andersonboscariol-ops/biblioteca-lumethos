@@ -201,6 +201,10 @@ app.get('/api/read/:fileId', (req, res) => {
 app.get('/api/mobile/:fileId', async (req, res) => {
   const { fileId } = req.params;
   if (!fileId) return res.status(400).json({ error: 'fileId é obrigatório' });
+  // Check subscription
+  if (!req.user || !req.user.id || !db.isSubscriptionActive(req.user.id)) {
+    return res.status(403).json({ error: 'Assinatura necessária para acessar este conteúdo', requires_subscription: true });
+  }
 
   try {
     const resp = await fetch(`https://drive.google.com/uc?export=download&id=${fileId}`, {
