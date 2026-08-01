@@ -6707,7 +6707,9 @@ document.addEventListener('wheel', function(e) {
     currentSub = null;
     profileName.textContent = 'Olá Visitante';
     profileStatus.textContent = 'Faça login';
-    window.location.reload();
+    // Padrão v7: vai direto pra tela de login servida pelo servidor
+    // (reload() recarregava /app e dependia do JS pra trocar de tela)
+    window.location.href = '/login';
   };
 
   // Bootstrap auth check when page loads (after all other scripts)

@@ -1,5 +1,5 @@
 // Service Worker — Biblioteca Lumethos PWA v5
-const CACHE = 'bib-lumethos-v7';
+const CACHE = 'bib-lumethos-v8';
 const STATIC = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
