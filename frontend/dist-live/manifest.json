@@ -1,0 +1,20 @@
+{
+  "name": "Biblioteca Lumethos",
+  "short_name": "Bib. Lumethos",
+  "description": "1000+ livros de teologia, biblioteca digital do Instituto Lumethos",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1a1c23",
+  "background_color": "#1a1c23",
+  "categories": ["education", "books", "religion"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "splash_pages": null,
+  "prefer_related_applications": false
+}
